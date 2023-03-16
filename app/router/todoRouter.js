@@ -1,13 +1,22 @@
 const express = require('express')
 const router = express.Router()
 
+const { 
+
+    getTodos,
+    createTodos,
+    updateTodos,
+    deleteTodos,
+  
+} = require('../controllers/todoController')
+
 router
-    .get('/', (req, res) => { res.status( 200 ).json( { a :'list of todos' }) }) // get all todo lists
+    .get('/', getTodos) // get all todo lists
 
-    .post('/', (req, res) => { res.status( 200 ).json( { a :'this is todo id' }) }) // create todo 
+    .post('/', createTodos) // create todos 
 
-    .put('/:todo_id', (req, res) => { res.status( 200 ).json( { a :'this is todo id' }) }) // update todo
+    .put('/:todo_id', updateTodos) // update todo
 
-    .delete('/:todo_id', (req, res) => { res.status( 200 ).json( { a :'this is todo id' }) }) // delete todo
+    .delete('/:todo_id', deleteTodos) // delete todo
 
 module.exports = router
