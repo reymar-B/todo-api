@@ -29,8 +29,6 @@ const createTodos = asyncHandler(async (req, res) => {
         todo: req.body.todo,
     })
 
-    console.log(todos)
-
     res.status(201).json(todos)
 })
 
@@ -78,7 +76,7 @@ const deleteTodos = asyncHandler( async(req, res) => {
     }
 
     await todo.deleteOne();
-    res.status(200).json({ id: req.params.todo_id })
+    res.status(200).json({id: req.params.todo_id})
 })
 
 module.exports = {
