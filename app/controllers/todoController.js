@@ -1,13 +1,15 @@
-const expressAsyncHandler = require("express-async-handler");
+const asyncHandler = require("express-async-handler");
+const Todo = require('../models/todo');
 
 
 // @desc    Get todos
 // @route   GET /todos
 // @access  Private
 
-const getTodos = expressAsyncHandler( async(req, res) => { 
+const getTodos = asyncHandler(async (req, res) => {
 
-    res.status(200).json({message : 'list of todos'}) 
+    const todos = await Todo.find()
+    res.status(200).json(todos)
 
 })
 
@@ -16,13 +18,21 @@ const getTodos = expressAsyncHandler( async(req, res) => {
 // @route   POST /todos
 // @access  Private
 
-const createTodos = (req, res) => { 
+const createTodos = asyncHandler(async (req, res) => {
 
-    console.log(req.body)
+    if (!req.body.todo) {
+        res.status(400)
+        throw new Error('Please add a todo field')
+    }
 
-    res.status(201).json({message : 'create todos'}) 
+    const todos = await Todo.create({
+        todo: req.body.todo,
+    })
 
-}
+    console.log(todos)
+
+    res.status(201).json(todos)
+})
 
 
 
@@ -30,22 +40,46 @@ const createTodos = (req, res) => {
 // @route   Put /todos/:todo_id
 // @access  Private
 
-const updateTodos = (req, res) => { 
+const updateTodos = asyncHandler(async (req, res) => {
+   
+    const todo = await Todo.findById(req.params.todo_id)
 
-    res.status(200).json({message : 'update todos'}) 
+    if (!todo) {
+        res.status(400)
+        throw new Error('Todo not found')
+    }
 
-}
+    if (!req.body.todo) {
+        res.status(400)
+        throw new Error('Please add a todo field')
+    }
+
+    const updatedTodo = await Todo.findOneAndUpdate(
+        {_id : req.params.todo_id}, 
+        req.body, 
+        {new : true}
+    )
+
+    res.status(200).json(updatedTodo);
+})
 
 
 // @desc    Delete todos
 // @route   Delete /todos/:todo_id
 // @access  Private
 
-const deleteTodos = (req, res) => { 
+const deleteTodos = asyncHandler( async(req, res) => {
 
-    res.status(200).json({message :'delete todos'}) 
+    const todo = await Todo.findById(req.params.todo_id)
 
-}
+    if (!todo) {
+        res.status(400)
+        throw new Error('Todo not found')
+    }
+
+    await todo.deleteOne();
+    res.status(200).json({ id: req.params.todo_id })
+})
 
 module.exports = {
 
