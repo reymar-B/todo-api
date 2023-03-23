@@ -7,12 +7,12 @@ const {
     getUser,
 } = require('../controllers/userController')
 
-// const { protect } = require('../middleware/authMiddleware')
+const { protect } = require('../middleware/auth')
 
 router
     .post('/', registerUser) // Register a user
     .post('/login', loginUser) // Logged a user
-    .get('/data', getUser) // Get user data
+    .get('/data', protect, getUser) // Get user data
 
 
 module.exports = router
