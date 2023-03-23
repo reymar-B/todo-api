@@ -5,7 +5,6 @@ const Todo = require('../models/todo');
 // @desc    Get todos
 // @route   GET /todos
 // @access  Private
-
 const getTodos = asyncHandler(async (req, res) => {
 
     const todos = await Todo.find()
@@ -17,7 +16,6 @@ const getTodos = asyncHandler(async (req, res) => {
 // @desc    Create todos
 // @route   POST /todos
 // @access  Private
-
 const createTodos = asyncHandler(async (req, res) => {
 
     if (!req.body.todo) {
@@ -37,7 +35,6 @@ const createTodos = asyncHandler(async (req, res) => {
 // @desc    Update todos
 // @route   Put /todos/:todo_id
 // @access  Private
-
 const updateTodos = asyncHandler(async (req, res) => {
    
     const todo = await Todo.findById(req.params.todo_id)
@@ -65,7 +62,6 @@ const updateTodos = asyncHandler(async (req, res) => {
 // @desc    Delete todos
 // @route   Delete /todos/:todo_id
 // @access  Private
-
 const deleteTodos = asyncHandler( async(req, res) => {
 
     const todo = await Todo.findById(req.params.todo_id)
