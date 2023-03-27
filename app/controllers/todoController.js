@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Todo = require('../models/todo');
+const User = require('../models/user');
 
 
 // @desc    Get todos
@@ -7,7 +8,7 @@ const Todo = require('../models/todo');
 // @access  Private
 const getTodos = asyncHandler(async (req, res) => {
 
-    const todos = await Todo.find()
+    const todos = await Todo.find({ user: req.user.id })
     res.status(200).json(todos)
 
 })
@@ -18,12 +19,15 @@ const getTodos = asyncHandler(async (req, res) => {
 // @access  Private
 const createTodos = asyncHandler(async (req, res) => {
 
+    console.log(req.user)
+
     if (!req.body.todo) {
         res.status(400)
         throw new Error('Please add a todo field')
     }
 
     const todos = await Todo.create({
+        user: req.user.id,
         todo: req.body.todo,
     })
 
@@ -36,8 +40,10 @@ const createTodos = asyncHandler(async (req, res) => {
 // @route   Put /todos/:todo_id
 // @access  Private
 const updateTodos = asyncHandler(async (req, res) => {
-   
+
     const todo = await Todo.findById(req.params.todo_id)
+
+    console.log(todo)
 
     if (!todo) {
         res.status(400)
@@ -49,10 +55,22 @@ const updateTodos = asyncHandler(async (req, res) => {
         throw new Error('Please add a todo field')
     }
 
+    // Check for user
+    if (!req.user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged in user matches the goal user
+    if (todo.user.toString() !== req.user.id) {
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+
     const updatedTodo = await Todo.findOneAndUpdate(
-        {_id : req.params.todo_id}, 
-        req.body, 
-        {new : true}
+        { _id: req.params.todo_id },
+        req.body,
+        { new: true }
     )
 
     res.status(200).json(updatedTodo);
@@ -62,7 +80,7 @@ const updateTodos = asyncHandler(async (req, res) => {
 // @desc    Delete todos
 // @route   Delete /todos/:todo_id
 // @access  Private
-const deleteTodos = asyncHandler( async(req, res) => {
+const deleteTodos = asyncHandler(async (req, res) => {
 
     const todo = await Todo.findById(req.params.todo_id)
 
@@ -72,7 +90,7 @@ const deleteTodos = asyncHandler( async(req, res) => {
     }
 
     await todo.deleteOne();
-    res.status(200).json({id: req.params.todo_id})
+    res.status(200).json({ id: req.params.todo_id })
 })
 
 module.exports = {
