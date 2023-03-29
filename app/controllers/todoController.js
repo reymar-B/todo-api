@@ -43,8 +43,6 @@ const updateTodos = asyncHandler(async (req, res) => {
 
     const todo = await Todo.findById(req.params.todo_id)
 
-    console.log(todo)
-
     if (!todo) {
         res.status(400)
         throw new Error('Todo not found')
@@ -89,8 +87,20 @@ const deleteTodos = asyncHandler(async (req, res) => {
         throw new Error('Todo not found')
     }
 
+    // Check for user
+    if (!req.user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+
+    // Make sure the logged in user matches the goal user
+    if (todo.user.toString() !== req.user.id) {
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+
     await todo.deleteOne();
-    res.status(200).json({ id: req.params.todo_id })
+    res.status(200).json({id: req.params.todo_id})
 })
 
 module.exports = {
